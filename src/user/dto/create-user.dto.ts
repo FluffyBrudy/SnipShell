@@ -2,14 +2,14 @@ import { IsEmail, IsString, IsStrongPassword, Length } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
-  @Length(32)
+  @Length(3, 32)
   displayName: string;
 
   @IsEmail()
-  @Length(32)
+  @Length(6, 32)
   email: string;
 
   @IsStrongPassword()
-  @Length(16)
+  @Length(8, 16)
   password: string;
 }
