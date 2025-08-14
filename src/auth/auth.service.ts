@@ -16,6 +16,12 @@ export class AuthService {
     });
   }
 
+  loginUser(loginUserDto: Omit<RegisterUserDto, 'displayName'>) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...safeUser } = loginUserDto;
+    return safeUser;
+  }
+
   async validateUser(email: User['email'], password: User['password']) {
     const user = await this.userService.findUserBy({ email });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);

@@ -15,4 +15,11 @@ export class AuthController {
       await this.authService.registerUser(registerUserDto);
     return safeUser;
   }
+
+  @Post('login')
+  @PublicRoute()
+  login(@Body() loginUserDto: Omit<RegisterUserDto, 'displayName'>) {
+    const user = this.authService.loginUser(loginUserDto);
+    return user;
+  }
 }
