@@ -24,6 +24,9 @@ export class UserCommand {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
 
+  @Column('text', { name: 'note', nullable: true, default: () => "''" })
+  note: string | null;
+
   @ManyToOne(() => Command, (command) => command.userCommands)
   @JoinColumn([{ name: 'command', referencedColumnName: 'id' }])
   command: Command;
