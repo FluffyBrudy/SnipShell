@@ -7,12 +7,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('tags', { schema: 'public' })
+@Entity('tags', { schema: 'public', synchronize: true })
 export class Tag {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
 
-  @Column('character varying', { name: 'name', length: 50 })
+  @Column({ name: 'name', type: 'char varying', unique: true, length: 50 })
   name: string;
 
   @ManyToMany(() => UserCommand, (userCommand) => userCommand.tags)
