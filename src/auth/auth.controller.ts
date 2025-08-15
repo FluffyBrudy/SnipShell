@@ -22,9 +22,14 @@ export class AuthController {
   @Public()
   @Post('register')
   async register(@Body() createAuthDto: RegisterUserDto) {
-    const user = await this.authService.register(createAuthDto);
-    if (user.kind === 'SUCCESS') return { user };
-    throw new ConflictException(user.error);
+    const { kind, error, user } =
+      await this.authService.register(createAuthDto);
+    if (kind === 'SUCCESS') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _, ...safeUser } = user;
+      return safeUser;
+    }
+    throw new ConflictException(error);
   }
 
   @Public()

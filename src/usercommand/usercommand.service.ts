@@ -15,7 +15,10 @@ export class UsercommandService {
     private readonly commandService: CommandService,
   ) {}
 
-  async create(createUserCommandDto: CreateUsercommandDto) {
+  async create(
+    userId: UserCommand['userId'],
+    createUserCommandDto: CreateUsercommandDto,
+  ) {
     const [tags, command] = await Promise.all([
       this.tagService.createMultiple(createUserCommandDto.tags),
       this.commandService.findOrCreate(createUserCommandDto.command),
@@ -28,6 +31,7 @@ export class UsercommandService {
       by user_command table
     */
     const usercommand = this.userCommandRepository.create({
+      userId: userId,
       command: command,
       tags: tags,
       note: JSON.stringify(createUserCommandDto.note),

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserCommand } from 'src/usercommand/entities/usercommand.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users', { schema: 'public' })
 export class User {
@@ -21,4 +22,7 @@ export class User {
 
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
+
+  @OneToMany(() => UserCommand, (userCommand) => userCommand.user)
+  userCommands: UserCommand[];
 }
