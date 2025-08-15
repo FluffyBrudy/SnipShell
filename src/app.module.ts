@@ -9,8 +9,8 @@ import { UsercommandModule } from './usercommand/usercommand.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LocalAuthGuard } from './auth/guard/local-auth.guard';
 import { User } from './user/entities/user.entity';
+import { JwtAuthGuard } from './auth/guards/auth.guard';
 
 @Module({
   imports: [
@@ -35,7 +35,7 @@ import { User } from './user/entities/user.entity';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: LocalAuthGuard,
+      useClass: JwtAuthGuard,
     },
   ],
 })

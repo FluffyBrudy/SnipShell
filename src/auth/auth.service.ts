@@ -1,35 +1,88 @@
+import { Injectable } from '@nestjs/common';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { UserService } from 'src/user/user.service';
-import { RegisterUserDto } from './dto/create-user.dto';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+import { LoginUserDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+type Tpayload = { sub: User['id']; email: User['email'] };
+type TPayloadUnion =
+  | { payload: null; kind: 'ERROR'; error: string }
+  | { payload: Tpayload; kind: 'SUCCESS'; error: string };
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
-  async registerUser(registerUserDto: RegisterUserDto) {
-    const hashedPassword = hashSync(registerUserDto.password, genSaltSync());
-    return await this.userService.createUser({
+  public async validateUser(userCredentials: LoginUserDto) {
+    const { email: userEmail, password } = userCredentials;
+
+    const user = await this.userService.findUserBy({ email: userEmail });
+    if (!user)
+      return { kind: 'ERROR', error: 'user not found', user: null } as const;
+
+    const passwordMatch = compareSync(password, user.password);
+    if (!passwordMatch)
+      return {
+        kind: 'ERROR',
+        error: 'invalid credentials',
+        user: null,
+      } as const;
+
+    const { email, id } = user;
+    return { kind: 'SUCCESS', error: null, user: { email, id } } as const;
+  }
+
+  async register(registerUserDto: RegisterUserDto) {
+    const { email, password } = registerUserDto;
+    const userExist = await this.userService.findUserBy({ email });
+    if (userExist)
+      return { kind: 'ERROR', error: 'user already exists' } as const;
+    const hashedPassword = hashSync(password, genSaltSync());
+    const user = await this.userService.createUser({
       ...registerUserDto,
       password: hashedPassword,
     });
+    return { kind: 'SUCCESS', error: null, user } as const;
   }
 
-  loginUser(loginUserDto: Omit<RegisterUserDto, 'displayName'>) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _, ...safeUser } = loginUserDto;
-    return safeUser;
+  login(id: User['id'], email: string) {
+    const payload = { sub: id, email: email };
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.getOrThrow<string>(
+        'JWT_ACCESS_TOKEN_EXPIRES_IN',
+      ),
+    });
+    return {
+      refreshToken,
+      accessToken: this.jwtService.sign(payload),
+    };
   }
 
-  async validateUser(email: User['email'], password: User['password']) {
-    const user = await this.userService.findUserBy({ email });
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  verifyRefreshToken(token: string): TPayloadUnion {
+    try {
+      const payload = this.jwtService.verify<Tpayload>(token, {
+        secret: this.configService.getOrThrow<string>(
+          'JWT_REFRESH_TOKEN_SECRET',
+        ),
+        ignoreExpiration: false,
+        ignoreNotBefore: true,
+      });
 
-    const { password: hashedPassword, ...other } = user;
-    const isPasswordMatching = compareSync(password, hashedPassword);
-    if (!isPasswordMatching)
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-    return other;
+      return { payload, error: '', kind: 'SUCCESS' } as const;
+    } catch (error) {
+      return {
+        payload: null,
+        error: (error as Error).message,
+        kind: 'ERROR',
+      } as const;
+    }
   }
 }
