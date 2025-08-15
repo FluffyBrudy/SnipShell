@@ -12,7 +12,7 @@ export class Tag {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
 
-  @Column({ name: 'name', type: 'char varying', unique: true, length: 50 })
+  @Column({ name: 'name', type: 'varchar', unique: true, length: 50 })
   name: string;
 
   @ManyToMany(() => UserCommand, (userCommand) => userCommand.tags)

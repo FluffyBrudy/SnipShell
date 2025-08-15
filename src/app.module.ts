@@ -11,6 +11,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/entities/user.entity';
 import { JwtAuthGuard } from './auth/guards/auth.guard';
+import { Tag } from './tag/entities/tag.entity';
+import { UserCommand } from './usercommand/entities/usercommand.entity';
+import { Command } from './command/entities/command.entity';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { JwtAuthGuard } from './auth/guards/auth.guard';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DB_URL'),
-        entities: [User],
+        entities: [User, Tag, Command, UserCommand],
       }),
     }),
     AuthModule,

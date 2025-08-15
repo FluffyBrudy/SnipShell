@@ -1,11 +1,8 @@
-import { IsNumberString, IsString, Length } from 'class-validator';
-import { Tag } from '../entities/tag.entity';
+import { IsString, Length, Matches } from 'class-validator';
 
-export class CreateTagDto {
-  @IsNumberString()
-  id: Tag['id'];
-
-  @IsString()
+export class CreateTagsDto {
+  @IsString({ each: true })
   @Length(3, 50)
-  name: string;
+  @Matches(/[a-z]+(?:-[a-z0-9]+)*/, { each: true })
+  tags: string[];
 }
