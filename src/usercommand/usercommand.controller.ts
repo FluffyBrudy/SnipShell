@@ -41,7 +41,7 @@ export class UsercommandController {
   }
 
   @Get()
-  async fetchByYser(
+  async fetchByUser(
     @Req() request: Request,
     @Query() findUserCommandByUserDto: FindUserCommandByUserDto,
   ) {
