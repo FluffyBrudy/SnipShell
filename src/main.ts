@@ -12,7 +12,14 @@ async function bootstrap() {
 
   app.use(cookieParser(process.env.COOKIE_SECRET as string));
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+    }),
+  );
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('My API')

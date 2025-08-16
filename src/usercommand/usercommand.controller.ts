@@ -32,11 +32,11 @@ export class UsercommandController {
     @Query() findUserCommandByUserDto: FindUserCommandByUserDto,
   ) {
     const user = request.user as unknown as { id: User['id']; email: string };
-    const { page, sortOrder } = findUserCommandByUserDto;
+    const { page, order } = findUserCommandByUserDto;
     const commands = await this.userCommandService.findManyByUser(
       user.id,
       page || 1,
-      sortOrder || 'DESC',
+      order || 'DESC',
     );
 
     return { commands };

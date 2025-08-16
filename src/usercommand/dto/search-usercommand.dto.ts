@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsInt,
   IsNumber,
@@ -13,6 +14,7 @@ export class SearchUsercommanDto {
 
 export class FindUserCommandByUserDto {
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   @IsInt()
   page?: number;
@@ -20,5 +22,5 @@ export class FindUserCommandByUserDto {
   @IsOptional()
   @IsString()
   @Matches(/ASC|DESC/i, { message: 'sort order can be one of ASC and DESC' })
-  sortOrder?: 'ASC' | 'DESC';
+  order?: 'ASC' | 'DESC';
 }
