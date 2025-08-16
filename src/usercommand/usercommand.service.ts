@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
 import { TagService } from 'src/tag/tag.service';
 import { CommandService } from 'src/command/command.service';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class UsercommandService {
@@ -38,5 +39,50 @@ export class UsercommandService {
       arguments: createUserCommandDto.arguments,
     });
     return await this.userCommandRepository.save(usercommand);
+  }
+
+  async findMany(userId: User['id'], commandArg: UserCommand['arguments']) {
+    const userCommands = await this.userCommandRepository
+      .createQueryBuilder('uc')
+      .select()
+      .addSelect(`similarity(uc.arguments, :search)`, 'similarity')
+      .where(`similarity(uc.arguments, :search) > 0.3`)
+      .andWhere(`uc.user_id=:userId`)
+      .setParameters({
+        search: commandArg,
+        userId: userId,
+      })
+      .getRawMany<UserCommand & { similarity: number }>();
+    return userCommands;
+  }
+
+  async findManyByUser(
+    userId: User['id'],
+    page: number = 1,
+    sortOrder: 'ASC' | 'DESC' | 'asc' | 'desc' = 'DESC',
+  ) {
+    const pageSize: number = 50;
+    const skip = (page - 1) * pageSize;
+
+    const [userCommands, total] = await this.userCommandRepository.findAndCount(
+      {
+        where: { userId },
+        take: pageSize,
+        skip,
+        order: { createdAt: sortOrder, id: sortOrder },
+      },
+    );
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    return {
+      data: userCommands,
+      page,
+      pageSize,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
   }
 }

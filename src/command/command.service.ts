@@ -19,4 +19,15 @@ export class CommandService {
       return existingCommand;
     }
   }
+
+  async findMany(command: Command['command']) {
+    const commands = await this.comandRepository
+      .createQueryBuilder('c')
+      .select('c.command')
+      .addSelect(`similarity(c.command, :search)`, 'similarity')
+      .where(`similarity(c.command, :search) > 0.3`)
+      .setParameter('search', command)
+      .getRawMany<{ similarity: number; command: string }>();
+    return commands;
+  }
 }
