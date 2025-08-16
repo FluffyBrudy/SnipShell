@@ -3,10 +3,8 @@ import { UsercommandService } from './usercommand.service';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
 import { type Request } from 'express';
 import { User } from 'src/user/entities/user.entity';
-import {
-  FindUserCommandByUserDto,
-  SearchUsercommanDto,
-} from './dto/search-usercommand.dto';
+import { SearchUsercommanDto } from './dto/search-usercommand.dto';
+import { FindUserCommandByUserDto } from './dto/find-usercommand-by-user.dto';
 
 @Controller('usercommand')
 export class UsercommandController {
