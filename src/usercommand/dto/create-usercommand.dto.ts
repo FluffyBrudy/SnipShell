@@ -1,7 +1,11 @@
-import { IsObject, IsString, Matches } from 'class-validator';
+import { IsLowercase, IsObject, IsString, Matches } from 'class-validator';
 
 export class CreateUsercommandDto {
   @IsString()
+  @IsLowercase()
+  @Matches(/^[a-z]+\d*[a-z0-9]*/, {
+    message: 'command must not contain any extra symbol',
+  })
   command: string;
 
   @IsString()

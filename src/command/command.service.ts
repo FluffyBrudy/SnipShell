@@ -21,12 +21,17 @@ export class CommandService {
   }
 
   async findMany(command: Command['command']) {
+    console.log(command, 'c');
     const commands = await this.comandRepository
       .createQueryBuilder('c')
-      .select('c.command')
+      .select('c.command', 'command')
       .addSelect(`similarity(c.command, :search)`, 'similarity')
-      .where(`similarity(c.command, :search) > 0.3`)
-      .setParameter('search', command)
+      .where(`c.command ILIKE :prefix`)
+      .orWhere(`similarity(c.command, :search) > 0.3`)
+      .setParameters({
+        prefix: `${command}%`,
+        search: command,
+      })
       .getRawMany<{ similarity: number; command: string }>();
     return commands;
   }

@@ -8,7 +8,7 @@ import {
 
 export class SearchUsercommanDto {
   @IsString()
-  commandArgs: string;
+  args: string;
 }
 
 export class FindUserCommandByUserDto {

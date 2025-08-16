@@ -26,20 +26,6 @@ export class UsercommandController {
     return { ...userCommand, note: note };
   }
 
-  @Get('search')
-  async fetchMany(
-    @Req() request: Request,
-    @Query() searchUsercommanDto: SearchUsercommanDto,
-  ) {
-    const user = request.user as unknown as { id: User['id']; email: string };
-
-    const commands = await this.userCommandService.findMany(
-      user.id,
-      searchUsercommanDto.commandArgs,
-    );
-    return commands;
-  }
-
   @Get()
   async fetchByUser(
     @Req() request: Request,
@@ -54,5 +40,19 @@ export class UsercommandController {
     );
 
     return { commands };
+  }
+
+  @Get('search')
+  async search(
+    @Req() request: Request,
+    @Query() searchUsercommanDto: SearchUsercommanDto,
+  ) {
+    const user = request.user as unknown as { id: User['id']; email: string };
+
+    const commands = await this.userCommandService.findMany(
+      user.id,
+      searchUsercommanDto.args,
+    );
+    return commands;
   }
 }

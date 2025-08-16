@@ -46,9 +46,11 @@ export class UsercommandService {
       .createQueryBuilder('uc')
       .select()
       .addSelect(`similarity(uc.arguments, :search)`, 'similarity')
-      .where(`similarity(uc.arguments, :search) > 0.3`)
+      .where('uc.arguments ILIKE :prefix')
+      .orWhere(`similarity(uc.arguments, :search) > 0.3`)
       .andWhere(`uc.user_id=:userId`)
       .setParameters({
+        prefix: commandArg + '%',
         search: commandArg,
         userId: userId,
       })
