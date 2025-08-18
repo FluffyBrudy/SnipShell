@@ -36,12 +36,12 @@ export class UsercommandService {
       command: command,
       tags: tags,
       note: JSON.stringify(createUserCommandDto.note),
-      arguments: createUserCommandDto.arguments,
+      arguments: command.command + ' ' + createUserCommandDto.arguments,
     });
     return await this.userCommandRepository.save(usercommand);
   }
 
-  async findMany(userId: User['id'], commandArg: UserCommand['arguments']) {
+  async findMany(userId: User['id'], commandArg: string) {
     const userCommands = await this.userCommandRepository
       .createQueryBuilder('uc')
       .select()
