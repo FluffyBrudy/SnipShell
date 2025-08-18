@@ -46,6 +46,8 @@ export class UsercommandService {
       .createQueryBuilder('uc')
       .select()
       .addSelect(`similarity(uc.arguments, :search)`, 'similarity')
+      .leftJoinAndSelect('uc.tags', 'tags')
+      .leftJoinAndSelect('uc.command', 'command')
       .where('uc.arguments ILIKE :prefix')
       .orWhere(`similarity(uc.arguments, :search) > 0.3`)
       .andWhere(`uc.user_id=:userId`)
@@ -54,7 +56,7 @@ export class UsercommandService {
         search: commandArg,
         userId: userId,
       })
-      .getRawMany<UserCommand & { similarity: number }>();
+      .getMany();
     return userCommands;
   }
 
@@ -69,12 +71,15 @@ export class UsercommandService {
     const [userCommands, total] = await this.userCommandRepository.findAndCount(
       {
         where: { userId },
+        relations: {
+          command: true,
+          tags: true,
+        },
         take: pageSize,
         skip,
         order: { createdAt: sortOrder, id: sortOrder },
       },
     );
-
     const totalPages = Math.ceil(total / pageSize);
 
     return {

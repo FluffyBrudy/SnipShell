@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { UserCommand } from 'src/usercommand/entities/usercommand.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -18,8 +19,6 @@ export class User {
     enum: ['owner', 'helper', 'viewer'],
     default: () => "'owner'",
   })
-  role: 'owner' | 'helper' | 'viewer' | null;
-
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
 

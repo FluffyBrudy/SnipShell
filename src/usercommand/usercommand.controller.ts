@@ -1,17 +1,20 @@
 import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiBody, 
-  ApiQuery, 
-  ApiBadRequestResponse, 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiBadRequestResponse,
   ApiUnauthorizedResponse,
-  ApiBearerAuth
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsercommandService } from './usercommand.service';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
-import { UserCommandResponseDto, UserCommandsResponseDto } from './dto/usercommand-response.dto';
+import {
+  UserCommandResponseDto,
+  UserCommandsResponseDto,
+} from './dto/usercommand-response.dto';
 import { type Request } from 'express';
 import { User } from 'src/user/entities/user.entity';
 import { SearchUsercommanDto } from './dto/search-usercommand.dto';
@@ -24,37 +27,42 @@ export class UsercommandController {
   constructor(private readonly userCommandService: UsercommandService) {}
 
   @Post()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Create a new user command',
-    description: 'Creates a new command snippet with tags and notes for the authenticated user'
+    description:
+      'Creates a new command snippet with tags and notes for the authenticated user',
   })
   @ApiBody({ type: CreateUsercommandDto })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'User command created successfully',
-    type: UserCommandResponseDto
+    type: UserCommandResponseDto,
   })
-  @ApiUnauthorizedResponse({ 
+  @ApiUnauthorizedResponse({
     description: 'User not authenticated',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Unauthorized' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'Invalid input data',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'array', items: { type: 'string' }, example: ['command should not be empty'] },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['command should not be empty'],
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async create(
     @Req() request: Request,
@@ -70,38 +78,54 @@ export class UsercommandController {
   }
 
   @Get()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get user commands with pagination',
-    description: 'Retrieves paginated list of user commands for the authenticated user'
+    description:
+      'Retrieves paginated list of user commands for the authenticated user',
   })
-  @ApiQuery({ name: 'page', description: 'Page number', example: 1, required: false })
-  @ApiQuery({ name: 'order', description: 'Sort order', example: 'DESC', required: false, enum: ['ASC', 'DESC'] })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiQuery({
+    name: 'page',
+    description: 'Page number',
+    example: 1,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'order',
+    description: 'Sort order',
+    example: 'DESC',
+    required: false,
+    enum: ['ASC', 'DESC'],
+  })
+  @ApiResponse({
+    status: 200,
     description: 'User commands retrieved successfully',
-    type: UserCommandsResponseDto
+    type: UserCommandsResponseDto,
   })
-  @ApiUnauthorizedResponse({ 
+  @ApiUnauthorizedResponse({
     description: 'User not authenticated',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Unauthorized' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'Invalid query parameters',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'array', items: { type: 'string' }, example: ['page must be a positive integer'] },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['page must be a positive integer'],
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async fetchByUser(
     @Req() request: Request,
@@ -119,37 +143,45 @@ export class UsercommandController {
   }
 
   @Get('search')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Search user commands',
-    description: 'Search for user commands by arguments'
+    description: 'Search for user commands by arguments',
   })
-  @ApiQuery({ name: 'args', description: 'Search arguments', example: 'git commit' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiQuery({
+    name: 'args',
+    description: 'Search arguments',
+    example: 'git commit',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Search results retrieved successfully',
-    type: UserCommandsResponseDto
+    type: UserCommandsResponseDto,
   })
-  @ApiUnauthorizedResponse({ 
+  @ApiUnauthorizedResponse({
     description: 'User not authenticated',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Unauthorized' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'Invalid search query',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'array', items: { type: 'string' }, example: ['args should not be empty'] },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['args should not be empty'],
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async search(
     @Req() request: Request,

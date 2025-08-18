@@ -13,7 +13,7 @@ export class FindUserCommandByUserDto {
     description: 'Page number for pagination',
     example: 1,
     required: false,
-    minimum: 1
+    minimum: 1,
   })
   @IsOptional()
   @Type(() => Number)
@@ -25,7 +25,7 @@ export class FindUserCommandByUserDto {
     description: 'Sort order for results',
     example: 'DESC',
     required: false,
-    enum: ['ASC', 'DESC']
+    enum: ['ASC', 'DESC'],
   })
   @IsOptional()
   @IsString()

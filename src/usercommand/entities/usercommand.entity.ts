@@ -16,8 +16,7 @@ export class UserCommand {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
 
-  @Column('integer', { name: 'command' })
-  @Exclude()
+  @Column('integer', { name: 'command', select: false })
   commandId: number;
 
   @Column('integer', { name: 'user_id' })
