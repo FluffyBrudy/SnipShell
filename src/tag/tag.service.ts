@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tag } from './entities/tag.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class TagService {
@@ -18,5 +18,10 @@ export class TagService {
       .returning('*')
       .execute();
     return insertedTags.raw as Tag[];
+  }
+
+  async findManyByIds(ids: Array<Tag['id']>) {
+    const tags = await this.tagRespository.findBy({ id: In(ids) });
+    return tags;
   }
 }

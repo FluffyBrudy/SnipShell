@@ -9,19 +9,23 @@ import {
   BadRequestException,
   HttpCode,
 } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiBody, 
-  ApiBadRequestResponse, 
-  ApiConflictResponse, 
-  ApiUnauthorizedResponse 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { UserResponseDto, LoginResponseDto, RefreshTokenResponseDto } from './dto/auth-response.dto';
+import {
+  UserResponseDto,
+  LoginResponseDto,
+  RefreshTokenResponseDto,
+} from './dto/auth-response.dto';
 import { Public } from './decorators/auth.decorator';
 import { type Request, type Response } from 'express';
 
@@ -32,37 +36,44 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Register a new user',
-    description: 'Creates a new user account with the provided credentials'
+    description: 'Creates a new user account with the provided credentials',
   })
   @ApiBody({ type: RegisterUserDto })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'User registered successfully',
-    type: UserResponseDto
+    type: UserResponseDto,
   })
-  @ApiConflictResponse({ 
+  @ApiConflictResponse({
     description: 'User with this email already exists',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 409 },
-        message: { type: 'string', example: 'User with this email already exists' },
-        error: { type: 'string', example: 'Conflict' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'User with this email already exists',
+        },
+        error: { type: 'string', example: 'Conflict' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'Invalid input data',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'array', items: { type: 'string' }, example: ['email must be an email'] },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['email must be an email'],
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async register(@Body() createAuthDto: RegisterUserDto) {
     const { kind, error, user } =
@@ -77,37 +88,42 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User login',
-    description: 'Authenticates user credentials and returns access token with refresh token in cookies'
+    description:
+      'Authenticates user credentials and returns access token with refresh token in cookies',
   })
   @ApiBody({ type: LoginUserDto })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Login successful',
-    type: LoginResponseDto
+    type: LoginResponseDto,
   })
-  @ApiUnauthorizedResponse({ 
+  @ApiUnauthorizedResponse({
     description: 'Invalid credentials',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Invalid credentials' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'Invalid input data',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'array', items: { type: 'string' }, example: ['email must be an email'] },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        message: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['email must be an email'],
+        },
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   async login(@Body() loginUserDto: LoginUserDto, @Res() response: Response) {
     const { error, kind, user } =
@@ -129,36 +145,37 @@ export class AuthController {
   @Public()
   @HttpCode(200)
   @Post('refresh-token')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Refresh access token',
-    description: 'Uses refresh token from cookies to generate a new access token'
+    description:
+      'Uses refresh token from cookies to generate a new access token',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Token refreshed successfully',
-    type: RefreshTokenResponseDto
+    type: RefreshTokenResponseDto,
   })
-  @ApiUnauthorizedResponse({ 
+  @ApiUnauthorizedResponse({
     description: 'Invalid or expired refresh token',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Invalid refresh token' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'No refresh token found in cookies',
     schema: {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
         message: { type: 'string', example: 'no refresh token found' },
-        error: { type: 'string', example: 'Bad Request' }
-      }
-    }
+        error: { type: 'string', example: 'Bad Request' },
+      },
+    },
   })
   refreshToken(@Req() request: Request, @Res() response: Response) {
     const token = request.cookies['refreshToken'] as string | undefined;
