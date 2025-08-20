@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UserCommand } from './entities/usercommand.entity';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
 import { TagService } from 'src/tag/tag.service';
@@ -109,9 +109,38 @@ export class UsercommandService {
 
     if (!userCommand) throw new NotFoundException('User command not found');
 
-    const res = await this.dataSource.transaction(async (manager) => {
+    return await this.dataSource.transaction(async (manager) => {
       if (data.tags) {
-        await this.syncTags(userCommand, data.tags, manager);
+        const incomingNames = new Set(data.tags);
+        const currentNames = new Set(userCommand.tags.map((t) => t.name));
+
+        const toRemove = userCommand.tags.filter(
+          (t) => !incomingNames.has(t.name),
+        );
+        const toAddNames = [...incomingNames].filter(
+          (name) => !currentNames.has(name),
+        );
+        const toAdd = await this.tagService.createMultiple(toAddNames);
+
+        if (toRemove.length) {
+          await manager.query(
+            `DELETE FROM public.user_commands_tags 
+           WHERE user_command_id = $1 AND tag_id = ANY($2::int[])`,
+            [userCommand.id, toRemove.map((t) => t.id)],
+          );
+        }
+
+        if (toAdd.length) {
+          await manager.query(
+            `INSERT INTO public.user_commands_tags (user_command_id, tag_id)
+           SELECT $1, unnest($2::int[])`,
+            [userCommand.id, toAdd.map((t) => t.id)],
+          );
+        }
+
+        userCommand.tags = userCommand.tags
+          .filter((t) => !toRemove.includes(t))
+          .concat(toAdd);
       }
 
       if (data.command) {
@@ -120,49 +149,19 @@ export class UsercommandService {
         );
         userCommand.command = commandEntity;
       }
+
       if (data.arguments) {
         userCommand.arguments = data.arguments;
       }
+
       if (data.note) {
         userCommand.note = JSON.stringify({
-          ...JSON.parse(userCommand.note),
+          ...JSON.parse(userCommand.note || '{}'),
           ...data.note,
         });
       }
+
       return await manager.save(userCommand);
     });
-    return res;
-  }
-
-  private async syncTags(
-    userCommand: UserCommand,
-    incomingTags: string[],
-    manager: EntityManager,
-  ) {
-    const incomingNames = new Set(incomingTags.map((t) => t));
-    const currentNames = new Set(userCommand.tags.map((t) => t.name));
-    this.logger.log(incomingNames, 'incoming');
-    this.logger.log(currentNames, 'existing');
-    const toRemove = userCommand.tags.filter((t) => !incomingNames.has(t.name));
-    const toAddNames = [...incomingNames].filter(
-      (name) => !currentNames.has(name),
-    );
-    const toAdd = await this.tagService.createMultiple(toAddNames);
-    console.log(toRemove);
-    if (toRemove.length) {
-      await manager
-        .createQueryBuilder()
-        .relation(UserCommand, 'tags')
-        .of(userCommand.id)
-        .remove(toRemove.map((t) => t.id));
-    }
-
-    if (toAdd.length) {
-      await manager
-        .createQueryBuilder()
-        .relation(UserCommand, 'tags')
-        .of(userCommand.id)
-        .add(toAdd.map((t) => t.id));
-    }
   }
 }
