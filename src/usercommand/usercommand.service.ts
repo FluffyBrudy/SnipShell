@@ -130,7 +130,7 @@ export class UsercommandService {
           );
         }
 
-        if (toAdd.length) {
+        if (toAdd?.length) {
           await manager.query(
             `INSERT INTO public.user_commands_tags (user_command_id, tag_id)
            SELECT $1, unnest($2::int[])`,
