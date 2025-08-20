@@ -111,7 +111,36 @@ export class UsercommandService {
 
     const res = await this.dataSource.transaction(async (manager) => {
       if (data.tags) {
-        await this.syncTags(userCommand, data.tags, manager);
+        const incomingNames = new Set(data.tags.map((t) => t));
+        const currentNames = new Set(userCommand.tags.map((t) => t.name));
+        this.logger.log(incomingNames, 'incoming');
+        this.logger.log(currentNames, 'existing');
+        const toRemove = userCommand.tags.filter(
+          (t) => !incomingNames.has(t.name),
+        );
+        const toAddNames = [...incomingNames].filter(
+          (name) => !currentNames.has(name),
+        );
+        const toAdd = await this.tagService.createMultiple(toAddNames);
+        console.log(toRemove);
+        if (toRemove?.length) {
+          await manager
+            .createQueryBuilder()
+            .relation(UserCommand, 'tags')
+            .of(userCommand.id)
+            .remove(toRemove.map((t) => t.id));
+        }
+
+        if (toAdd?.length) {
+          await manager
+            .createQueryBuilder()
+            .relation(UserCommand, 'tags')
+            .of(userCommand.id)
+            .add(toAdd.map((t) => t.id));
+        }
+        userCommand.tags = userCommand.tags
+          .filter((t) => !toRemove.some((r) => r.id === t.id))
+          .concat(toAdd);
       }
 
       if (data.command) {
