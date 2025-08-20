@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -19,6 +28,7 @@ import { type Request } from 'express';
 import { User } from 'src/user/entities/user.entity';
 import { SearchUsercommanDto } from './dto/search-usercommand.dto';
 import { FindUserCommandByUserDto } from './dto/find-usercommand-by-user.dto';
+import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
 
 @ApiTags('usercommands')
 @ApiBearerAuth()
@@ -194,5 +204,19 @@ export class UsercommandController {
       searchUsercommanDto.args,
     );
     return commands;
+  }
+
+  @HttpCode(200)
+  @Put()
+  async update(
+    @Req() request: Request,
+    @Body() updateUserCommandDto: UpdateUserCommandDto,
+  ) {
+    const { userId } = request.user as { userId: User['id'] };
+    const res = await this.userCommandService.update(
+      userId,
+      updateUserCommandDto,
+    );
+    return res;
   }
 }

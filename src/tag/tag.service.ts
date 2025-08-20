@@ -9,13 +9,15 @@ export class TagService {
     @InjectRepository(Tag) private readonly tagRespository: Repository<Tag>,
   ) {}
 
-  async createMultiple(tags: string[]) {
+  async createMultiple(tags: string[], selectUserCommand?: false) {
+    const otherSelectable = selectUserCommand ? ['userCommands'] : [];
     const insertedTags = await this.tagRespository
       .createQueryBuilder()
+      .select(['id', 'name', ...otherSelectable])
       .insert()
       .values(tags.map((name) => ({ name: name })))
       .orUpdate(['name'], ['name'])
-      .returning('*')
+      .returning(['id', 'name', ...otherSelectable])
       .execute();
     return insertedTags.raw as Tag[];
   }
