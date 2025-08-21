@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('tags', { schema: 'public', synchronize: true })
+@Entity('tags', { schema: 'public' })
 export class Tag {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'id' })
   id: number;
