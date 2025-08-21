@@ -25,6 +25,7 @@ import { Command } from './command/entities/command.entity';
         type: 'postgres',
         url: configService.getOrThrow<string>('DB_URL'),
         entities: [User, Tag, Command, UserCommand],
+        synchronize: configService.getOrThrow<string>('NODE_ENV') !== 'prod',
       }),
     }),
     AuthModule,

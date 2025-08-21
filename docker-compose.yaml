@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    container_name: postgres-db
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+  nestjs:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - DB_URL=${DB_URL}
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRES_IN=${JWT_ACCESS_TOKEN_EXPIRES_IN}
+      - JWT_REFRESH_TOKEN_EXPIRES_IN=${JWT_REFRESH_TOKEN_EXPIRES_IN}
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - '3000:3000'
+    container_name: snipshell
+    depends_on:
+      - db
+    volumes:
+      - .:/app
