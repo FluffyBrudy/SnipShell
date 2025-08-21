@@ -174,6 +174,5 @@ export class UsercommandService {
     if (toRemove || toAdd) {
       userCommand.tags = finalizedToAdd;
     }
-    console.log(finalizedToAdd);
   }
 }
