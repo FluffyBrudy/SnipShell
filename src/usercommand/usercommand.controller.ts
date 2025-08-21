@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
+  Param,
   Post,
   Put,
   Query,
@@ -29,6 +31,7 @@ import { User } from 'src/user/entities/user.entity';
 import { SearchUsercommanDto } from './dto/search-usercommand.dto';
 import { FindUserCommandByUserDto } from './dto/find-usercommand-by-user.dto';
 import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
+import { UserCommand } from './entities/usercommand.entity';
 
 @ApiTags('usercommands')
 @ApiBearerAuth()
@@ -207,16 +210,26 @@ export class UsercommandController {
   }
 
   @HttpCode(200)
-  @Put()
+  @Put(':id')
   async update(
     @Req() request: Request,
     @Body() updateUserCommandDto: UpdateUserCommandDto,
+    @Param('id') id: UserCommand['id'],
   ) {
-    const { userId } = request.user as { userId: User['id'] };
+    const { id: userId } = request.user as { id: User['id'] };
     const res = await this.userCommandService.update(
       userId,
+      +id,
       updateUserCommandDto,
     );
     return res;
+  }
+
+  @HttpCode(200)
+  @Delete(':id')
+  async delete(@Req() request: Request, @Param('id') id: UserCommand['id']) {
+    console.log(request.user);
+    const { id: userId } = request.user as { id: User['id'] };
+    return { success: !!(await this.userCommandService.delete_(userId, +id)) };
   }
 }

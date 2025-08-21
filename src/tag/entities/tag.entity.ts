@@ -15,7 +15,10 @@ export class Tag {
   @Column({ name: 'name', type: 'varchar', unique: true, length: 50 })
   name: string;
 
-  @ManyToMany(() => UserCommand, (userCommand) => userCommand.tags)
+  @ManyToMany(() => UserCommand, (userCommand) => userCommand.tags, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'user_commands_tags',
     joinColumns: [{ name: 'tag_id', referencedColumnName: 'id' }],
