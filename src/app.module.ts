@@ -20,9 +20,6 @@ import { JwtAuthGuard } from './auth/guards/auth.guard';
         url: configService.getOrThrow<string>('DB_URL'),
         entities: ['dist/**/*.entity.js'],
         synchronize: configService.getOrThrow<string>('NODE_ENV') !== 'prod',
-        ssl: {
-          rejectUnauthorized: false,
-        },
       }),
     }),
     AuthModule,
