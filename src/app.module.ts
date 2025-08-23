@@ -7,11 +7,7 @@ import { UsercommandModule } from './usercommand/usercommand.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './user/entities/user.entity';
 import { JwtAuthGuard } from './auth/guards/auth.guard';
-import { Tag } from './tag/entities/tag.entity';
-import { UserCommand } from './usercommand/entities/usercommand.entity';
-import { Command } from './command/entities/command.entity';
 
 @Module({
   imports: [
@@ -22,7 +18,7 @@ import { Command } from './command/entities/command.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DB_URL'),
-        entities: [User, Tag, Command, UserCommand],
+        entities: ['dist/**/*.entity.js'],
         synchronize: configService.getOrThrow<string>('NODE_ENV') !== 'prod',
       }),
     }),
