@@ -17,9 +17,12 @@ import { JwtAuthGuard } from './auth/guards/auth.guard';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: configService.getOrThrow<string>('DB_URL'),
+        url: configService.getOrThrow<string>('DB_UsRL'),
         entities: ['dist/**/*.entity.js'],
         synchronize: configService.getOrThrow<string>('NODE_ENV') !== 'prod',
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
     }),
     AuthModule,
