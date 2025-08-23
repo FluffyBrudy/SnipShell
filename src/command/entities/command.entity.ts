@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserCommand } from 'src/usercommand/entities/usercommand.entity';
+import { UserCommand } from '../../usercommand/entities/usercommand.entity';
 
 @Entity('commands', { schema: 'public' })
 export class Command {

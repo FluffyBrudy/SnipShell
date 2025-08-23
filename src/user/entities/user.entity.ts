@@ -1,5 +1,4 @@
-import { Exclude } from 'class-transformer';
-import { UserCommand } from 'src/usercommand/entities/usercommand.entity';
+import { UserCommand } from '../../usercommand/entities/usercommand.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users', { schema: 'public' })

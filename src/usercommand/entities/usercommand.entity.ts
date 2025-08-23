@@ -6,10 +6,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Command } from 'src/command/entities/command.entity';
-import { Tag } from 'src/tag/entities/tag.entity';
-import { User } from 'src/user/entities/user.entity';
-import { Exclude } from 'class-transformer';
+import { Command } from '../../command/entities/command.entity';
+import { Tag } from '../../tag/entities/tag.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'user_commands' })
 export class UserCommand {

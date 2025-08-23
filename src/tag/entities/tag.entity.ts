@@ -1,4 +1,4 @@
-import { UserCommand } from 'src/usercommand/entities/usercommand.entity';
+import { UserCommand } from '../../usercommand/entities/usercommand.entity';
 import {
   Column,
   Entity,

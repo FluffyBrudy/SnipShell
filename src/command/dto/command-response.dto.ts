@@ -1,10 +1,5 @@
-
 export class CommandResponseDto {
-    id: number;
+  id: number;
 
-    command: string;
-}
-
-export class CommandsResponseDto {
-    commands: CommandResponseDto[];
+  command: string;
 }

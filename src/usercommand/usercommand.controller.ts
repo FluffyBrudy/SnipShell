@@ -10,14 +10,10 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
+import { type Request } from 'express';
 import { UsercommandService } from './usercommand.service';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
-import {
-  UserCommandResponseDto,
-  UserCommandsResponseDto,
-} from './dto/usercommand-response.dto';
-import { type Request } from 'express';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { SearchUsercommanDto } from './dto/search-usercommand.dto';
 import { FindUserCommandByUserDto } from './dto/find-usercommand-by-user.dto';
 import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
@@ -28,7 +24,7 @@ export class UsercommandController {
   constructor(private readonly userCommandService: UsercommandService) {}
 
   @Post()
-    async create(
+  async create(
     @Req() request: Request,
     @Body() createUserCommandDto: CreateUsercommandDto,
   ) {
@@ -42,7 +38,7 @@ export class UsercommandController {
   }
 
   @Get()
-    async fetchByUser(
+  async fetchByUser(
     @Req() request: Request,
     @Query() findUserCommandByUserDto: FindUserCommandByUserDto,
   ) {
@@ -58,7 +54,7 @@ export class UsercommandController {
   }
 
   @Get('search')
-    async search(
+  async search(
     @Req() request: Request,
     @Query() searchUsercommanDto: SearchUsercommanDto,
   ) {

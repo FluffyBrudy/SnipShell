@@ -3,9 +3,9 @@ import { UserCommand } from './entities/usercommand.entity';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
-import { TagService } from 'src/tag/tag.service';
-import { CommandService } from 'src/command/command.service';
-import { User } from 'src/user/entities/user.entity';
+import { TagService } from '../tag/tag.service';
+import { CommandService } from '../command/command.service';
+import { User } from '../user/entities/user.entity';
 import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
 
 @Injectable()

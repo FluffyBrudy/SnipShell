@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 
 type Tpayload = { sub: User['id']; email: User['email'] };
