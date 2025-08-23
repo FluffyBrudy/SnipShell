@@ -24,4 +24,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 }
 
-void bootstrap();
+if (process.env.NODE_ENV !== 'prod') {
+  void bootstrap();
+}
+export default bootstrap;
