@@ -21,7 +21,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
-    async register(@Body() createAuthDto: RegisterUserDto) {
+  async register(@Body() createAuthDto: RegisterUserDto) {
     const { kind, error, user } =
       await this.authService.register(createAuthDto);
     if (kind === 'SUCCESS') {
@@ -34,7 +34,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
-    async login(@Body() loginUserDto: LoginUserDto, @Res() response: Response) {
+  async login(@Body() loginUserDto: LoginUserDto, @Res() response: Response) {
     const { error, kind, user } =
       await this.authService.validateUser(loginUserDto);
     if (kind === 'ERROR') throw new UnauthorizedException(error);
@@ -54,22 +54,18 @@ export class AuthController {
   @Public()
   @HttpCode(200)
   @Post('refresh-token')
-    refreshToken(@Req() request: Request, @Res() response: Response) {
+  refreshToken(@Req() request: Request, @Res() response: Response) {
     const token = request.cookies['refreshToken'] as string | undefined;
     if (!token) throw new BadRequestException('no refresh token found');
     const { kind, error, payload } = this.authService.verifyRefreshToken(token);
-    console.log(payload);
+
     if (kind === 'ERROR') throw new UnauthorizedException(error);
-    const { refreshToken, accessToken } = this.authService.login(
+    const { accessToken } = this.authService.login(
       payload.sub,
       payload.email,
+      true,
     );
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+
     response.json({ accessToken });
   }
 }

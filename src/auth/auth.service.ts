@@ -52,8 +52,11 @@ export class AuthService {
     return { kind: 'SUCCESS', error: null, user } as const;
   }
 
-  login(id: User['id'], email: string) {
+  login(id: User['id'], email: string, includeRefreshToken = true) {
     const payload = { sub: id, email: email };
+    if (!includeRefreshToken) {
+      return { accessToken: this.jwtService.sign(payload) };
+    }
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: this.configService.getOrThrow<string>(
