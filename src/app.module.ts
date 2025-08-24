@@ -18,8 +18,13 @@ import { JwtAuthGuard } from './auth/guards/auth.guard';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.getOrThrow<string>('DB_URL'),
-        entities: ['dist/**/*.entity.js'],
+        entities: [
+          __dirname + '//**/*.entity{.ts,.js}',
+          process.cwd() + '/dist/**/*.entity.js',
+        ],
+        migrations: ['dist/migrations/*.js'],
         synchronize: configService.getOrThrow<string>('NODE_ENV') !== 'prod',
+        autoLoadEntities: true,
       }),
     }),
     AuthModule,
