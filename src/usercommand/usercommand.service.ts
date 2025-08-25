@@ -70,11 +70,17 @@ export class UsercommandService {
     return userCommands;
   }
 
-  async searchManyByTags(tag: Tag['name'][], userId?: User['id']) {
+  async searchManyByTags(tags: Tag['name'][], userId?: User['id']) {
     const userIdOptional = userId ? { userId } : {};
-    const searchResponse = await this.userCommandRepository.findBy({
-      tags: tag.map((name) => ({ name })),
-      ...userIdOptional,
+    const searchResponse = await this.userCommandRepository.find({
+      where: {
+        tags: tags.map((name) => ({ name })),
+        ...userIdOptional,
+      },
+      select: {
+        tags: true,
+      },
+      relations: ['command', 'tags'],
     });
     return searchResponse;
   }
