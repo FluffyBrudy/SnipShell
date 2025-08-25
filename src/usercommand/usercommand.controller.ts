@@ -14,7 +14,10 @@ import { type Request } from 'express';
 import { UsercommandService } from './usercommand.service';
 import { CreateUsercommandDto } from './dto/create-usercommand.dto';
 import { User } from '../user/entities/user.entity';
-import { SearchUsercommanDto } from './dto/search-usercommand.dto';
+import {
+  SearchUsercommandByTagsDto,
+  SearchUsercommanDto,
+} from './dto/search-usercommand.dto';
 import { FindUserCommandByUserDto } from './dto/find-usercommand-by-user.dto';
 import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
 import { UserCommand } from './entities/usercommand.entity';
@@ -62,6 +65,19 @@ export class UsercommandController {
 
     const commands = await this.userCommandService.searchMany(
       searchUsercommanDto.args,
+      user.id,
+    );
+    return commands;
+  }
+
+  @Get('search/tags')
+  async searchByTags(
+    @Req() request: Request,
+    @Query() query: SearchUsercommandByTagsDto,
+  ) {
+    const user = request.user as unknown as { id: User['id']; email: string };
+    const commands = await this.userCommandService.searchManyByTags(
+      query.tags,
       user.id,
     );
     return commands;

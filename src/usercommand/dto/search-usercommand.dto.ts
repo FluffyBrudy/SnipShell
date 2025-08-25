@@ -1,6 +1,12 @@
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class SearchUsercommanDto {
-    @IsString()
+  @IsString()
   args: string;
+}
+
+export class SearchUsercommandByTagsDto {
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  tags: string[];
 }

@@ -7,6 +7,7 @@ import { TagService } from '../tag/tag.service';
 import { CommandService } from '../command/command.service';
 import { User } from '../user/entities/user.entity';
 import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
+import { Tag } from 'src/tag/entities/tag.entity';
 
 @Injectable()
 export class UsercommandService {
@@ -67,6 +68,15 @@ export class UsercommandService {
       })
       .getMany();
     return userCommands;
+  }
+
+  async searchManyByTags(tag: Tag['name'][], userId?: User['id']) {
+    const userIdOptional = userId ? { userId } : {};
+    const searchResponse = await this.userCommandRepository.findBy({
+      tags: tag.map((name) => ({ name })),
+      ...userIdOptional,
+    });
+    return searchResponse;
   }
 
   async findManyByUser(
