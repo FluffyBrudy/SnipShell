@@ -6,9 +6,9 @@ import { SearchCommandDto } from './dto/search-command.dto';
 export class CommandController {
   constructor(private readonly commandService: CommandService) {}
 
-  @Get()
-  async fetchMany(@Query() searchCommandDto: SearchCommandDto) {
-    const commands = await this.commandService.findMany(
+  @Get('/search')
+  async searchMany(@Query() searchCommandDto: SearchCommandDto) {
+    const commands = await this.commandService.searchMany(
       searchCommandDto.command,
     );
     return commands;

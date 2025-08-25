@@ -20,7 +20,7 @@ export class CommandService {
     }
   }
 
-  async findMany(command: Command['command']) {
+  async searchMany(command: Command['command']) {
     console.log(command, 'c');
     const commands = await this.comandRepository
       .createQueryBuilder('c')

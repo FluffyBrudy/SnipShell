@@ -45,16 +45,21 @@ export class UsercommandService {
     return await this.userCommandRepository.save(usercommand);
   }
 
-  async findMany(userId: User['id'], commandArg: string) {
-    const userCommands = await this.userCommandRepository
+  async searchMany(commandArg: string, userId?: User['id']) {
+    let searchQuery = this.userCommandRepository
       .createQueryBuilder('uc')
       .select()
       .addSelect(`similarity(uc.arguments, :search)`, 'similarity')
       .leftJoinAndSelect('uc.tags', 'tags')
       .leftJoinAndSelect('uc.command', 'command')
       .where('uc.arguments ILIKE :prefix')
-      .orWhere(`similarity(uc.arguments, :search) > 0.3`)
-      .andWhere(`uc.user_id=:userId`)
+      .orWhere(`similarity(uc.arguments, :search) > 0.3`);
+
+    if (userId) {
+      searchQuery = searchQuery.andWhere(`uc.user_id=:userId`);
+    }
+
+    const userCommands = await searchQuery
       .setParameters({
         prefix: commandArg + '%',
         search: commandArg,

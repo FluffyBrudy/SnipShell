@@ -60,9 +60,9 @@ export class UsercommandController {
   ) {
     const user = request.user as unknown as { id: User['id']; email: string };
 
-    const commands = await this.userCommandService.findMany(
-      user.id,
+    const commands = await this.userCommandService.searchMany(
       searchUsercommanDto.args,
+      user.id,
     );
     return commands;
   }
