@@ -42,6 +42,7 @@ export class UsercommandController {
   }
 
   @Post('favourite')
+  @HttpCode(200)
   async addOrRemoveFavourite(
     @Req() request: Request,
     @Body() favouriteUsercommandDto: FavouriteUsercommandDto,
