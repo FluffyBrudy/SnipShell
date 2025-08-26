@@ -136,9 +136,13 @@ export class UsercommandService {
     const [userCommands, total] = await this.userCommandRepository.findAndCount(
       {
         where: { userId },
+        select: {
+          favouritedBy: { id: true },
+        },
         relations: {
           command: true,
           tags: true,
+          favouritedBy: true,
         },
         take: pageSize,
         skip,
@@ -148,7 +152,9 @@ export class UsercommandService {
     const totalPages = Math.ceil(total / pageSize);
 
     return {
-      data: userCommands,
+      data: userCommands.map((uc) => ({
+        ...uc,
+      })),
       page,
       pageSize,
       total,
