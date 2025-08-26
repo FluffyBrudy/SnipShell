@@ -46,6 +46,46 @@ export class UsercommandService {
     return await this.userCommandRepository.save(usercommand);
   }
 
+  async addOrRemoveFavourite(
+    userId: User['id'],
+    userCommandId: UserCommand['id'],
+  ) {
+    const userCommand = await this.userCommandRepository.findOne({
+      where: { id: userCommandId, favouritedBy: { id: userId } },
+      select: {
+        id: true,
+        userId: true,
+        arguments: true,
+        note: true,
+        createdAt: true,
+        tags: true,
+        command: true,
+        favouritedBy: false,
+        user: false,
+      },
+      relations: ['command'],
+    });
+    if (!userCommand) {
+      await this.dataSource
+        .createQueryBuilder()
+        .relation(UserCommand, 'favouritedBy')
+        .of(userCommandId)
+        .add(userId);
+      return { action: 'ADD' };
+    } else {
+      await this.dataSource
+        .createQueryBuilder()
+        .delete()
+        .from('favourites')
+        .where('usercommand_id = :ucid AND user_id = :uid', {
+          ucid: userCommandId,
+          uid: userId,
+        })
+        .execute();
+      return { action: 'REMOVE' };
+    }
+  }
+
   async searchMany(commandArg: string, userId?: User['id']) {
     let searchQuery = this.userCommandRepository
       .createQueryBuilder('uc')

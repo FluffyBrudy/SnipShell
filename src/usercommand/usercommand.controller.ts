@@ -21,6 +21,7 @@ import {
 import { FindUserCommandByUserDto } from './dto/find-usercommand-by-user.dto';
 import { UpdateUserCommandDto } from './dto/update-usercommand.dto';
 import { UserCommand } from './entities/usercommand.entity';
+import { FavouriteUsercommandDto } from './dto/favourite-usercommand.dto';
 
 @Controller('usercommand')
 export class UsercommandController {
@@ -38,6 +39,20 @@ export class UsercommandController {
     );
     const note = JSON.parse(userCommand.note || '{}') as Record<string, string>;
     return { ...userCommand, note: note };
+  }
+
+  @Post('favourite')
+  async addOrRemoveFavourite(
+    @Req() request: Request,
+    @Body() favouriteUsercommandDto: FavouriteUsercommandDto,
+  ) {
+    const user = request.user as unknown as { id: User['id']; email: string };
+    const favouriatedCommand =
+      await this.userCommandService.addOrRemoveFavourite(
+        user.id,
+        favouriteUsercommandDto.usercommandId,
+      );
+    return favouriatedCommand;
   }
 
   @Get()

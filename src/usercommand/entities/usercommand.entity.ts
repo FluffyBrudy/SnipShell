@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -50,4 +51,13 @@ export class UserCommand {
 
   @ManyToMany(() => Tag, (tag) => tag.userCommands)
   tags: Tag[];
+
+  @ManyToMany(() => User, (user) => user.favouriteCommands)
+  @JoinTable({
+    name: 'favourites',
+    joinColumns: [{ name: 'usercommand_id', referencedColumnName: 'id' }],
+    inverseJoinColumns: [{ name: 'user_id', referencedColumnName: 'id' }],
+    schema: 'public',
+  })
+  favouritedBy: User[];
 }

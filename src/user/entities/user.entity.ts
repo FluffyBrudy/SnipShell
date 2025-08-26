@@ -1,5 +1,11 @@
 import { UserCommand } from '../../usercommand/entities/usercommand.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('users', { schema: 'public' })
 export class User {
@@ -23,4 +29,7 @@ export class User {
 
   @OneToMany(() => UserCommand, (userCommand) => userCommand.user)
   userCommands: UserCommand[];
+
+  @ManyToMany(() => UserCommand, (userCommand) => userCommand.favouritedBy)
+  favouriteCommands: UserCommand[];
 }
