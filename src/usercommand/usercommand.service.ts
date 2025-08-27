@@ -217,7 +217,6 @@ export class UsercommandService {
       }
       if (data.note) {
         userCommand.note = JSON.stringify({
-          ...JSON.parse(userCommand.note),
           ...data.note,
         });
       }
