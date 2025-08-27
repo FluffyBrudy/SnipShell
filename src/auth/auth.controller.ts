@@ -68,4 +68,16 @@ export class AuthController {
 
     response.json({ accessToken });
   }
+
+  @HttpCode(200)
+  @Post('logout')
+  logout(@Res() response: Response) {
+    response.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    response.json({ message: 'logout successfully' });
+  }
 }
